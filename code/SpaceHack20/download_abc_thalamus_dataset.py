@@ -27,30 +27,14 @@ functions:
         removes too-small, mistaken parcellation regions from TH/ZI binary masks
     label_thalamus_masked_cells:
         labels cells that are inside the TH+ZI mask from the CCF parcellation
-    convert_taxonomy_labels:
-        converts cell type labels between different taxonomy versions
-    get_color_dictionary:
-        returns dictionary of ABC Atlas hex colors for an input list of cell 
-        type labels
 '''
 
-ABC_ROOT = Path("/data/abc_atlas/")
-CURRENT_VERSION = "20230830"
+ABC_ROOT = Path('/data/abc_atlas/')
+CURRENT_VERSION = '20230830'
 BRAIN_LABEL = 'C57BL6J-638850'
+WRITE_DIR = Path('my/path/here')
 
-_CIRRO_COLUMNS = {
-    'x':'cirro_x',
-    'y':'cirro_y',
-    'x_section':'cirro_x',
-    'y_section':'cirro_y',
-    'brain_section_label':'section',
-    'parcellation_substructure':'CCF_acronym'
-}
-        
-
-def load_adata(version=CURRENT_VERSION, transform='log2', subset_to_TH_ZI=True,
-               with_metadata=True, flip_y=True, round_z=True, cirro_names=False, 
-               with_colors=False):
+def load_adata(version=CURRENT_VERSION, transform='log2', with_metadata=True):
     '''Load ABC Atlas MERFISH dataset as an anndata object.
     
     Parameters
@@ -62,21 +46,8 @@ def load_adata(version=CURRENT_VERSION, transform='log2', subset_to_TH_ZI=True,
         if 'both', log2 is stored in X and log2 & raw are stored in adata.layers.
         use both if writing to a permanent file or performing mapping on the 
         output; log2 for a smaller object for plotting & most other analyses.
-    subset_to_TH_ZI : bool, default=True
-        returns adata that only includes cells in the TH+ZI dataset, as subset
-        by label_thalamus_spatial_subset()
     with_metadata : bool, default=True
         include cell metadata in adata
-    flip_y : bool, default=True
-        flip y-axis coordinates so positive is up (coronal section appears 
-        right-side up as expected)
-    round_z : bool, default=True
-        rounds z_section, z_reconstructed coords to nearest 10ths place to
-        correct for overprecision in a handful of z coords
-    cirro_names : bool, default=False
-        changes metadata field names according to _CIRRO_COLUMNS dictionary
-    with_colors : bool, default=False
-        imports all colors with the metatdata (will take up more space)
         
     Results
     -------
@@ -104,20 +75,19 @@ def load_adata(version=CURRENT_VERSION, transform='log2', subset_to_TH_ZI=True,
                              backed='r')
    
     # subset to TH+ZI dataset
-    if subset_to_TH_ZI:
-        cells_md_df = get_combined_metadata(cirro_names=cirro_names, 
-                                            flip_y=flip_y,
-                                            round_z=round_z,
-                                            drop_unused=(not with_colors),
-                                            version=version)
-        cells_md_df = label_thalamus_spatial_subset(cells_md_df,
-                                                    flip_y=flip_y,
-                                                    distance_px=20,
-                                                    cleanup_mask=True,
-                                                    drop_end_sections=True,
-                                                    filter_cells=True)
-        cell_labels = cells_md_df.index
-        adata = adata[adata.obs_names.intersection(cell_labels)]
+    flip_y = True
+    cells_md_df = get_combined_metadata(flip_y=flip_y,
+                                        round_z=True,
+                                        drop_unused=True,
+                                        version=version)
+    cells_md_df = label_thalamus_spatial_subset(cells_md_df,
+                                                flip_y=flip_y,
+                                                distance_px=20,
+                                                cleanup_mask=True,
+                                                drop_end_sections=True,
+                                                filter_cells=True)
+    cell_labels = cells_md_df.index
+    adata = adata[adata.obs_names.intersection(cell_labels)]
     
     if transform!='both':
         adata = adata.to_memory()
@@ -126,13 +96,6 @@ def load_adata(version=CURRENT_VERSION, transform='log2', subset_to_TH_ZI=True,
     adata.var_names = adata.var['gene_symbol']
     
     if with_metadata:
-        # need to check whether we already loaded metadata for subset_to_TH_ZI
-        if 'cells_md_df' not in locals():
-            cells_md_df = get_combined_metadata(cirro_names=cirro_names, 
-                                                flip_y=flip_y, 
-                                                round_z=round_z,
-                                                drop_unused=~with_colors,
-                                                version=version)
         # add metadata to obs
         adata.obs = adata.obs.join(cells_md_df[cells_md_df.columns.difference(adata.obs.columns)])
 
@@ -163,7 +126,7 @@ def filter_adata_by_class(th_zi_adata, filter_nonneuronal=True,
         the anndata object, filtered to only include cells from specific 
         thalamic & zona incerta + optional (midbrain & nonneuronal) classes
     '''
-    # hardcoded class categories for v20230830
+    # hardcoded class categories
     th_zi_dataset_classes = ['12 HY GABA', '17 MH-LH Glut', '18 TH Glut']
     midbrain_classes = ['19 MB Glut', '20 MB GABA']
     nonneuronal_classes = ['30 Astro-Epen', '31 OPC-Oligo', '33 Vascular',
@@ -182,7 +145,7 @@ def filter_adata_by_class(th_zi_adata, filter_nonneuronal=True,
     return th_zi_adata
 
 
-def get_combined_metadata(drop_unused=True, cirro_names=False, flip_y=False, 
+def get_combined_metadata(drop_unused=True, flip_y=False, 
                           round_z=True, version=CURRENT_VERSION):
     '''Load the cell metadata csv, with memory/speed improvements.
     Selects correct dtypes and optionally renames and drops columns
@@ -191,8 +154,6 @@ def get_combined_metadata(drop_unused=True, cirro_names=False, flip_y=False,
     ----------
     drop_unused : bool, default=True
         don't load uninformative or unused columns (color etc)
-    cirro_names : bool, default=True
-        rename columns to match older cirro anndata names
     flip_y : bool, default=True
         flip section and reconstructed y coords so up is positive
     round_z : bool, default=True
@@ -239,8 +200,7 @@ def get_combined_metadata(drop_unused=True, cirro_names=False, flip_y=False,
     if round_z:
         cells_df['z_section'] = cells_df['z_section'].round(1)
         cells_df['z_reconstructed'] = cells_df['z_reconstructed'].round(1)
-    if cirro_names:
-        cells_df = cells_df.rename(columns=_CIRRO_COLUMNS)
+
     return cells_df
 
 
@@ -356,6 +316,9 @@ def label_thalamus_spatial_subset(cells_df, flip_y=False, distance_px=20,
     else:
         return cells_df
 
+    
+def curate_sections()
+
 
 def sectionwise_dilation(mask_img, distance_px, true_radius=False):
     '''Dilates a stack of 2D binary masks by a specified radius (in px).
@@ -467,142 +430,16 @@ def label_thalamus_masked_cells(cells_df, mask_img, coords, resolutions,
     return cells_df
 
 
-def convert_taxonomy_labels(input_labels, taxonomy_level, 
-                            label_format='id_label',
-                            input_version='20230630', output_version='20230830',
-                            output_as_dict=False):
-    ''' Converts cell type labels between taxonomy versions of the ABC Atlas.
+if __name__=="__main__":
+    th_zi_adata = load_adata(version=CURRENT_VERSION, transform='log2', 
+                             with_metadata=True)
     
-    Parameters
-    ----------
-    labels : list of strings
-        list of strings containing the cell type labels to be converted
-    taxonomy_level : {'cluster', 'supertype', 'subclass', 'class'}
-        specifies the taxonomy level to which 'labels' belong
-    label_format : string, {'id_label', 'id', 'label'}, default='id_label'
-        indicates format of 'labels' parameter; currently only supports full
-        id+label strings, e.g. "1130 TH Prkcd Grin2c Glut_1"
-        [TODO: support 'id'-only ("1130") & 
-               'label'-only ("TH Prkcd Grin2c Glut_1") user inputs]
-    input_version : str, default='20230630'
-        ABC Atlas version to which 'labels' belong
-    output_version : str, default='20230830'
-        ABC Atlas version the labels should be converted to
-    output_as_dict : bool, default=False
-        specifies whether output is a list (False, default) or dictionary (True)
+    th_zi_adata_neurons = filter_adata_by_class(th_zi_adata, 
+                                                filter_nonneuronal=True,
+                                                filter_midbrain=True)
     
-    Results
-    -------
-    output_labels
-        list of converted labels or dictionary mapping from input to converted
-        labels, depending 
-    '''
-    
-    # load in the correct cluster annotation membership CSV files
-    file = 'cluster_to_cluster_annotation_membership_pivoted.csv'
-    in_pivot_df = pd.read_csv(
-                        ABC_ROOT/f'metadata/WMB-taxonomy/{input_version}/views/{file}'
-                        )
-    out_pivot_df = pd.read_csv(
-                        ABC_ROOT/f'metadata/WMB-taxonomy/{output_version}/views/{file}'
-                        )
-    
-    # get cluster_alias list, which is stable between ABC atlas taxonomy versions
-    in_query_df = in_pivot_df.set_index(taxonomy_level).loc[input_labels].reset_index()
-    # clusters are unique, but other taxonomy levels exist in multiple rows
-    if taxonomy_level=='cluster':
-        cluster_alias_list = in_query_df['cluster_alias'].to_list()
-    else:
-        # dict() only keeps the last instance of a key due to overwriting,
-        # which I'm exploiting to remove duplicates
-        cluster_alias_list = list(dict(zip(in_query_df[taxonomy_level],
-                                           in_query_df['cluster_alias'])
-                                      ).values())
-    # use cluster_alias to map to output labels
-    out_query_df = out_pivot_df.set_index('cluster_alias').loc[cluster_alias_list].reset_index()
-    out_labels_list = out_query_df[taxonomy_level].to_list()
-    
-    if output_as_dict:
-        out_labels_dict = dict(zip(input_labels,out_labels_list))
-        return out_labels_dict
-    else:
-        return out_labels_list
-    
-    
-def get_color_dictionary(labels, taxonomy_level, label_format='id_label',
-                         version='20230830'):
-    ''' Returns a color dictionary for the specified cell types labels.
-    
-    Parameters
-    ----------
-    labels : list of strings
-        list of strings containing the cell type labels to be converted
-    taxonomy_level : {'cluster', 'supertype', 'subclass', 'class'}
-        specifies the taxonomy level to which 'labels' belong
-    label_format : string, {'id_label', 'id', 'label'}, default='id_label'
-        indicates format of 'labels' parameter; currently only supports full
-        id+label strings, e.g. "1130 TH Prkcd Grin2c Glut_1"
-        [TODO: support 'id'-only ("1130") & 
-               'label'-only ("TH Prkcd Grin2c Glut_1") user inputs]
-    version : str, default='20230830'
-        ABC Atlas version of the labels; cannot get colors from a different
-        version than your labels; to do that, first use convert_taxonomy_labels())
-    
-    Results
-    -------
-    color_dict : dict
-        dictionary mapping input 'labels' to their official ABC Atlas hex colors
-    '''
-    # load metadata csv files
-    pivot_file = 'cluster_to_cluster_annotation_membership_pivoted.csv'
-    color_file = 'cluster_to_cluster_annotation_membership_color.csv'
-    pivot_df = pd.read_csv(
-                    ABC_ROOT/f'metadata/WMB-taxonomy/{version}/views/{pivot_file}'
-                    )
-    color_df = pd.read_csv(
-                    ABC_ROOT/f'metadata/WMB-taxonomy/{version}/views/{color_file}'
-                    )
-    
-    # get cluster_alias list, which is stable between ABC atlas taxonomy versions
-    pivot_query_df = pivot_df.set_index(taxonomy_level).loc[labels].reset_index()
-    # clusters are unique, but other taxonomy levels exist in multiple rows
-    if taxonomy_level=='cluster':
-        cluster_alias_list = pivot_query_df['cluster_alias'].to_list()
-    else:
-        # dict() only keeps the last instance of a key due to overwriting,
-        # which I'm exploiting to remove duplicates while maintaining order
-        cluster_alias_list = list(dict(zip(pivot_query_df[taxonomy_level],
-                                           pivot_query_df['cluster_alias'])
-                                      ).values())
-    # use cluster_alias to map to colors
-    color_query_df = color_df.set_index('cluster_alias').loc[cluster_alias_list].reset_index()
-    colors_list = color_query_df[taxonomy_level+'_color'].to_list()
-
-    color_dict = dict(zip(labels,colors_list))
-    
-    return color_dict
-
-def get_ccf_metadata():
-    ccf_df = pd.read_csv(
-            ABC_ROOT/"metadata/Allen-CCF-2020/20230630/parcellation_to_parcellation_term_membership.csv"
-            )
-    return ccf_df
-
-def get_thalamus_substructure_names():
-    ccf_df = get_ccf_metadata()
-    th_zi_ind = np.hstack(
-            (ccf_df.loc[ccf_df['parcellation_term_acronym']=='TH', 
-                        'parcellation_index'].unique(),
-                ccf_df.loc[ccf_df['parcellation_term_acronym']=='ZI', 
-                        'parcellation_index'].unique())
-    )
-
-    ccf_labels = ccf_df.pivot(index='parcellation_index', values='parcellation_term_acronym', columns='parcellation_term_set_name')
-    th_names = ccf_labels.loc[th_zi_ind, 'substructure']
-    return th_names
-
-def get_ccf_substructure_index():
-    ccf_df = get_ccf_metadata()
-    # parcellation_index to acronym
-    substructure_index = ccf_df.query("parcellation_term_set_name=='substructure'").set_index('parcellation_index')['parcellation_term_acronym'].to_dict()
-    return substructure_index
+    th_zi_adata_neurons.write_h5ad(Path(WRITE_DIR,
+                                        ('abc_atlas_merfish_'+BRAIN_LABEL+'_v'
+                                         +CURRENT_VERSION+'_TH_ZI_neurons.h5ad')
+                                       ), 
+                                   compression='gzip')
