@@ -1,4 +1,6 @@
 from pathlib import Path
+from functools import lru_cache
+from itertools import chain
 import json
 import numpy as np
 import pandas as pd
@@ -50,7 +52,7 @@ def load_adata(version=CURRENT_VERSION, transform='log2', subset_to_TH_ZI=True,
                with_metadata=True, flip_y=True, round_z=True, cirro_names=False, 
                with_colors=False,
                realigned=False,
-               subset_to_left_hemi=False):
+               loaded_metadata=None):
     '''Load ABC Atlas MERFISH dataset as an anndata object.
     
     Parameters
@@ -80,14 +82,16 @@ def load_adata(version=CURRENT_VERSION, transform='log2', subset_to_TH_ZI=True,
     realigned : bool, default=False
         load and use for subsetting the metadata from realignment results data asset,
         containing 'ccf_realigned' coordinates 
-    subset_to_left_hemi : bool, default=False
-        include only cells in left hemisphere, according to CCF coordinates
+    loaded_metadata : DataFrame, default=None
+        already loaded metadata DataFrame to merge into AnnData, loading cells in this 
+        DataFrame only
         
     Results
     -------
     adata
         anndata object containing the ABC Atlas MERFISH dataset
     '''
+    # TODO: add option for true CPM? (vs log2CPV?)
     if transform=='both':
         # takes ~4 min + ~9 GB of memory to load both 
         adata_log2 = ad.read_h5ad(ABC_ROOT/f"expression_matrices/MERFISH-{BRAIN_LABEL}/{version}/{BRAIN_LABEL}-log2.h5ad", 
@@ -108,7 +112,10 @@ def load_adata(version=CURRENT_VERSION, transform='log2', subset_to_TH_ZI=True,
                              backed='r')
         
     if with_metadata or subset_to_TH_ZI or subset_to_left_hemi:
-        cells_md_df = get_combined_metadata(cirro_names=cirro_names, 
+        if loaded_metadata is not None:
+            cells_md_df = loaded_metadata
+        else:
+            cells_md_df = get_combined_metadata(cirro_names=cirro_names, 
                                         flip_y=flip_y,
                                         round_z=round_z,
                                         drop_unused=(not with_colors),
@@ -123,9 +130,6 @@ def load_adata(version=CURRENT_VERSION, transform='log2', subset_to_TH_ZI=True,
                                                         drop_end_sections=True,
                                                         filter_cells=True,
                                                         realigned=realigned)
-        if subset_to_left_hemi:
-            flag = "left_hemisphere_realigned" if realigned else "left_hemisphere"
-            cells_md_df = cells_md_df[cells_md_df[flag]]
         cell_labels = adata.obs_names.intersection(cells_md_df.index)
         adata = adata[cell_labels]
         adata = adata.to_memory()
@@ -168,16 +172,29 @@ def add_tiled_obsm(adata, offset=10, coords_name='section', obsm_field='coords_t
     adata.obsm[coords_tiled] = obsm
     return adata
 
+def filter_by_thalamus_coords(obs, realigned=False, buffer=0):
+    if buffer > 0:
+        obs = label_thalamus_spatial_subset(obs,
+                                    distance_px=buffer,
+                                    cleanup_mask=True,
+                                    drop_end_sections=True,
+                                    filter_cells=True,
+                                    realigned=realigned)
+    else:
+        ccf_label = 'parcellation_structure_realigned' if realigned else 'parcellation_structure'
+        th_names = get_thalamus_names(level='structure')
+        obs = obs[obs[ccf_label].isin(th_names)]
+    return obs
 
 def filter_adata_by_class(th_zi_adata, filter_nonneuronal=True,
-                          filter_midbrain=True):
+                          filter_midbrain=True, filter_others=True):
     ''' Filters anndata object to only include cells from specific taxonomy 
     classes.
 
     Parameters
     ----------
     th_zi_adata
-        anndata object containing the ABC Atlas MERFISH dataset
+        anndata object or dataframe containing the ABC Atlas MERFISH dataset
     filter_nonneuronal : bool, default=True
         filters out non-neuronal classes
     filter_midbrain : bool, default=True
@@ -204,33 +221,47 @@ def filter_adata_by_class(th_zi_adata, filter_nonneuronal=True,
         classes_to_keep += midbrain_classes
     if not filter_nonneuronal:
         classes_to_keep += nonneuronal_classes
+    if filter_others:
+        if hasattr(th_zi_adata, 'obs'):
+            subset = th_zi_adata.obs['class'].isin(classes_to_keep)
+        else:
+            subset = th_zi_adata['class'].isin(classes_to_keep)
+    else:
+        classes_to_exclude = set(midbrain_classes+nonneuronal_classes) - classes_to_keep
+        if hasattr(th_zi_adata, 'obs'):
+            subset = ~th_zi_adata.obs['class'].isin(classes_to_exclude)
+        else:
+            subset = ~th_zi_adata['class'].isin(classes_to_exclude)
+    return th_zi_adata[subset]
 
-    th_zi_adata = th_zi_adata[th_zi_adata.obs['class'].isin(classes_to_keep)]
-    return th_zi_adata
 
-
-def get_combined_metadata(drop_unused=True, cirro_names=False, flip_y=False, 
-                          round_z=True, version=CURRENT_VERSION,
-                          realigned=False):
+def get_combined_metadata(
+    version=CURRENT_VERSION,
+    realigned=False,
+    drop_unused=True, 
+    flip_y=False, 
+    round_z=True, 
+    cirro_names=False
+    ):
     '''Load the cell metadata csv, with memory/speed improvements.
     Selects correct dtypes and optionally renames and drops columns
     
     Parameters
     ----------
-    drop_unused : bool, default=True
-        don't load uninformative or unused columns (color etc)
-    cirro_names : bool, default=True
-        rename columns to match older cirro anndata names
-    flip_y : bool, default=True
-        flip section and reconstructed y coords so up is positive
-    round_z : bool, default=True
-        rounds z_section, z_reconstructed coords to nearest 10ths place to
-        correct for overprecision in a handful of z coords
     version : str, optional
         version to load, by default=CURRENT_VERSION
     realigned : bool, default=False
         if True, load metadata from realignment results data asset,
         containing 'ccf_realigned' coordinates 
+    drop_unused : bool, default=True
+        don't load uninformative or unused columns (color etc)
+    flip_y : bool, default=False
+        flip section and reconstructed y coords so up is positive
+    round_z : bool, default=True
+        rounds z_section, z_reconstructed coords to nearest 10ths place to
+        correct for overprecision in a handful of z coords
+    cirro_names : bool, default=False
+        rename columns to match older cirro anndata names
 
     Returns
     -------
@@ -257,6 +288,7 @@ def get_combined_metadata(drop_unused=True, cirro_names=False, flip_y=False,
     usecols = list(dtype.keys()) if drop_unused else None
 
     if realigned:
+        # TODO: add version to the data asset mount point to allow multiple
         cells_df = pd.read_parquet("/data/realigned/abc_realigned_metadata_thalamus-boundingbox.parquet")
         if version != CURRENT_VERSION:
             old_df = pd.read_csv(
@@ -275,13 +307,14 @@ def get_combined_metadata(drop_unused=True, cirro_names=False, flip_y=False,
     if cirro_names:
         cells_df = cells_df.rename(columns=_CIRRO_COLUMNS)
         
-    cells_df["left_hemisphere"] = cells_df["z_ccf"] < 5.5
+    cells_df["left_hemisphere"] = cells_df["z_ccf"] < 5.7
     if realigned:
-        cells_df["left_hemisphere_realigned"] = cells_df["z_ccf_realigned"] < 5.5
+        cells_df["left_hemisphere_realigned"] = cells_df["z_ccf_realigned"] < 5.7
+    cells_df = cells_df.replace("ZI-unassigned", "ZI")
     return cells_df
 
 
-def get_ccf_labels_image(resampled=True, realigned=False):
+def get_ccf_labels_image(resampled=True, realigned=False, subset_to_left_hemi=False):
     '''Loads rasterized image volumes of the CCF parcellation as 3D numpy array.
     
     Voxels are labelled with assigned brain structure parcellation ID #.
@@ -304,6 +337,8 @@ def get_ccf_labels_image(resampled=True, realigned=False):
         if resampled and realigned are both True, loads CCF labels from manual realignment, 
         which have been aligned into the MERFISH space/coordinates
         (incompatible with resampled=False as these haven't been calculated)
+    subset_to_left_hemi : bool, default=False
+        return a trimmed image to use visualizing single-hemisphere results
     
     Returns
     -------
@@ -320,7 +355,11 @@ def get_ccf_labels_image(resampled=True, realigned=False):
         raise UserWarning("This label image is not available")
     img = nibabel.load(path)
     # could maybe keep the lazy dataobj and not convert to numpy?
-    imdata = np.array(img.dataobj)
+    imdata = np.array(img.dataobj).astype(int)
+    if subset_to_left_hemi:
+        # erase right hemisphere (can't drop or indexing won't work correctly)
+        imdata[550:,:,:] = 0
+        
     return imdata
 
 
@@ -669,13 +708,17 @@ def get_color_dictionary(labels, taxonomy_level, label_format='id_label',
     
     return color_dict
 
+@lru_cache
 def get_ccf_metadata():
+    # this metadata hasn't been updated in other versions
     ccf_df = pd.read_csv(
             ABC_ROOT/"metadata/Allen-CCF-2020/20230630/parcellation_to_parcellation_term_membership.csv"
             )
+    ccf_df = ccf_df.replace("ZI-unassigned", "ZI")
     return ccf_df
 
-def get_thalamus_substructure_names():
+@lru_cache
+def get_thalamus_names(level=None):
     ccf_df = get_ccf_metadata()
     th_zi_ind = np.hstack(
             (ccf_df.loc[ccf_df['parcellation_term_acronym']=='TH', 
@@ -685,11 +728,62 @@ def get_thalamus_substructure_names():
     )
 
     ccf_labels = ccf_df.pivot(index='parcellation_index', values='parcellation_term_acronym', columns='parcellation_term_set_name')
-    th_names = ccf_labels.loc[th_zi_ind, 'substructure']
+    if level is not None:
+        th_names = ccf_labels.loc[th_zi_ind, level].values
+    else:
+        th_names = list(set(ccf_labels.loc[th_zi_ind, :].values.flatten()))
     return th_names
 
-def get_ccf_substructure_index():
+def get_thalamus_substructure_names():
+    return get_thalamus_names(level='substructure')
+
+@lru_cache
+def get_ccf_index(level='structure'):
     ccf_df = get_ccf_metadata()
     # parcellation_index to acronym
-    substructure_index = ccf_df.query("parcellation_term_set_name=='substructure'").set_index('parcellation_index')['parcellation_term_acronym'].to_dict()
-    return substructure_index
+    index = ccf_df.query(f"parcellation_term_set_name=='{level}'").set_index('parcellation_index')['parcellation_term_acronym']
+    return index
+
+@lru_cache
+def _get_cluster_annotations(version=CURRENT_VERSION):
+    df = pd.read_csv(
+        ABC_ROOT/f"metadata/WMB-taxonomy/{version}/cluster_to_cluster_annotation_membership.csv"
+    )
+    return df
+
+@lru_cache
+def get_taxonomy_palette(taxonomy_level, version=CURRENT_VERSION):
+    df = _get_cluster_annotations(version=version)
+    df = df[df["cluster_annotation_term_set_name"]==taxonomy_level]
+    palette = df.set_index('cluster_annotation_term_name')['color_hex_triplet'].to_dict()
+    return palette
+
+try:
+    nuclei_df_manual = pd.read_csv("/code/resources/prong1_cluster_annotations_by_nucleus.csv", index_col=0)
+    nuclei_df_manual = nuclei_df_manual.fillna("")
+    nuclei_df_auto = pd.read_csv("/code/resources/annotations_from_eroded_counts.csv",  index_col=0)
+    found_annotations = True
+except:
+    found_annotations = False
+
+def get_obs_from_annotated_clusters(name, obs, by='id', include_shared_clusters=False, manual_annotations=True):
+    if not found_annotations:
+        raise UserWarning("Can't access annotations sheet from this environment.")
+    # if name not in nuclei_df.index:
+    #     raise UserWarning("Name not found in annotations sheet")
+    nuclei_df = nuclei_df_manual if manual_annotations else nuclei_df_auto
+    if include_shared_clusters:
+        names = [x for x in nuclei_df.index if any(name in y and not 'pc' in y
+                                                    for y in x.split(" "))]
+    else: 
+        names = [x for x in nuclei_df.index if name in x 
+                 and not (' ' in x or 'pc' in x)]
+    
+    dfs = []
+    field = "cluster_alias" if by=='alias' else "cluster_ids_CNN20230720"
+    clusters = chain(*[nuclei_df.loc[name, field].split(', ') for name in names])
+    if by=='alias':
+        obs = obs.loc[lambda df: df['cluster_alias'].isin(clusters)]
+    elif by=='id':
+        obs = obs.loc[lambda df: df['cluster'].str[:4].isin(clusters)]
+    return obs
