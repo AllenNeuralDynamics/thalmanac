@@ -13,7 +13,7 @@ export LD_LIBRARY_PATH=/opt/conda/lib/
 # This could be changed to simply save an executed .ipynb file (--to notebook), 
 # or other formats (markdown etc).
 
-find . -name "$1" -print0 | xargs -0 --verbose -I % --max-procs=$(nproc) \
+find . -name "*.ipynb" -print0 | xargs -0 --verbose -I % --max-procs=$(nproc) \
 jupyter nbconvert \
 	--to notebook \
 	--ExecutePreprocessor.allow_errors=True \
