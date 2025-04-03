@@ -1,15 +1,8 @@
-# hash:sha256:f5bdaf5819a6f3fb31d95b0cb71333e7b2f28b2aae5b1cadab5823091f54c8e3
+# hash:sha256:b07399b66fe498fdae1d89164dc53723da7c8b1dc5b3cb7a50cca973a1621a76
 ARG REGISTRY_HOST
 FROM $REGISTRY_HOST/codeocean/jupyterlab:3.6.1-miniconda4.12.0-python3.9-ubuntu20.04
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG API_KEY
-ARG API_SECRET
-ARG AWS_ACCESS_KEY_ID
-ARG AWS_DEFAULT_REGION
-ARG AWS_SECRET_ACCESS_KEY
-ARG CUSTOM_KEY
-ARG CUSTOM_KEY_2
 
 ARG GIT_ASKPASS
 ARG GIT_ACCESS_TOKEN
@@ -29,7 +22,8 @@ RUN pip install -U --no-cache-dir \
     seaborn==0.13.2 \
     streamlit==1.38.0 \
     streamlit-aggrid==1.0.5 \
-    zarr==2.17.0
+    zarr==2.17.0 \
+    -e git+https://github.com/AllenNeuralDynamics/abc-merfish-analysis@26e7926a1ccb3d766da80c69e645508cffebe44a#egg=abc-merfish-analysis
 
 COPY postInstall /
 RUN /postInstall

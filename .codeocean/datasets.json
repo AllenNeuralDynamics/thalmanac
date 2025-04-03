@@ -1,0 +1,33 @@
+{
+	"version": 1,
+	"attached_datasets": [
+		{
+			"id": "4df16048-2a57-464e-8c53-5d7e34036cb1",
+			"mount": "spagcn"
+		},
+		{
+			"id": "6d6baa10-0d5d-47fb-b0cf-64dda2657132",
+			"mount": "realigned"
+		},
+		{
+			"id": "7d8c9fc4-9786-461e-9639-90272a30bc72",
+			"mount": "KimLabDevCCFv001"
+		},
+		{
+			"id": "a8eef74d-baa8-4278-8f72-166abdc0c749",
+			"mount": "nsf_2000_adata"
+		},
+		{
+			"id": "ae592f24-21cb-4e46-b475-1c1c49171cac",
+			"mount": "KimLabDevCCFv1"
+		},
+		{
+			"id": "b76f5c2c-d94b-426b-b861-699ea0a63889",
+			"mount": "abc_atlas"
+		},
+		{
+			"id": "c55678fc-00d8-4ae0-8ad9-ed5b34ffe41c",
+			"mount": "merscope_638850_devccf_resampled"
+		}
+	]
+}

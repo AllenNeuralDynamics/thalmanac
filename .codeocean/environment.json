@@ -1,0 +1,77 @@
+{
+	"version": 1,
+	"base_image": "codeocean/jupyterlab:3.6.1-miniconda4.12.0-python3.9-ubuntu20.04",
+	"post_install": true,
+	"options": {
+		"registry_host_arg": true,
+		"git_ask_pass": true
+	},
+	"installers": {
+		"pip": {
+			"packages": [
+				{
+					"name": "anndata",
+					"version": "0.10.9"
+				},
+				{
+					"name": "colorcet",
+					"version": "3.0.1"
+				},
+				{
+					"name": "colour-science",
+					"version": "0.4.4"
+				},
+				{
+					"name": "git+https://github.com/AllenNeuralDynamics/abc-merfish-analysis#egg=abc-merfish-analysis",
+					"version": "26e7926a1ccb3d766da80c69e645508cffebe44a"
+				},
+				{
+					"name": "nibabel",
+					"version": "5.1.0"
+				},
+				{
+					"name": "openpyxl",
+					"version": "3.1.5"
+				},
+				{
+					"name": "plotly",
+					"version": "6.0.0"
+				},
+				{
+					"name": "pydantic",
+					"version": "2.7.1"
+				},
+				{
+					"name": "scanpy",
+					"version": "1.9.3"
+				},
+				{
+					"name": "scikit-learn",
+					"version": "1.2.2"
+				},
+				{
+					"name": "scipy",
+					"version": "1.9.1"
+				},
+				{
+					"name": "seaborn",
+					"version": "0.13.2"
+				},
+				{
+					"name": "streamlit",
+					"version": "1.38.0"
+				},
+				{
+					"name": "streamlit-aggrid",
+					"version": "1.0.5"
+				},
+				{
+					"name": "zarr",
+					"version": "2.17.0"
+				}
+			],
+			"options": {},
+			"pre_install_options": {}
+		}
+	}
+}

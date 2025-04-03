@@ -1,4 +1,4 @@
 metadata_version: 1
-name: thalamus merfish analysis
+name: 'Thalmanac: thalamus MERFISH analysis and access'
 description: Code Ocean capsule for sharing analysis of thalamus MERFISH data, primarily
   in jupyter notebook form.
