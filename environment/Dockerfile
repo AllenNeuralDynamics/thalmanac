@@ -23,7 +23,7 @@ RUN pip install -U --no-cache-dir \
     streamlit==1.38.0 \
     streamlit-aggrid==1.0.5 \
     zarr==2.17.0 \
-    -e git+https://github.com/AllenNeuralDynamics/abc-merfish-analysis@26e7926a1ccb3d766da80c69e645508cffebe44a#egg=abc-merfish-analysis
+    -e git+https://github.com/AllenNeuralDynamics/abc-merfish-analysis@v0.3.0#egg=abc-merfish-analysis
 
 COPY postInstall /
 RUN /postInstall
