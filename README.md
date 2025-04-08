@@ -13,6 +13,10 @@ On Code Ocean: to work with your own copy of the capsule, select **Duplicate** f
 
 Locally: you can clone directly from github to your personal machine, but data assets will not be available. Code Ocean also has an option to download the capsule with data assets, but this will be very large if you're not careful!
 
+### Pipeline
+
+A few of the included analyses depend on preprocessed analysis results from separate capsules, due to complex dependencies that could not be included directly (specifically, NSF and SpaGCN methods). These preprocessed results are attached as data assets here, but for full end-to-end reproducibility a CO pipeline is available that links the execution of those preprocessing steps as inputs to a full re-run of the visualization/analysis notebooks: https://codeocean.allenneuraldynamics.org/capsule/9649481/tree.
+
 # Code Ocean basics
 
 ## Code, Data, Results
