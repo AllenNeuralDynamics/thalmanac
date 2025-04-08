@@ -90,7 +90,7 @@ with pane2:
     with de_genes:
         with st.form("load_genes"):
             dataset = st.radio(
-                "Choose dataset", ["MERFISH", "WMB-10Xv3", "WMB-10Xv2"], index=1, key="de_data_qp"
+                "Choose dataset", ["MERFISH", "WMB-10Xv3", "WMB-10Xv2"], index=0, key="de_data_qp"
             )
             sc_data = dataset != "MERFISH"
             load_genes = st.form_submit_button("Load gene data", on_click=stu.ss_to_qp)
