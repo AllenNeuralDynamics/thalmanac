@@ -1,4 +1,9 @@
 metadata_version: 1
 name: 'THALMANAC: Thalamus MERFISH analysis and access'
-description: Code Ocean capsule for sharing analysis of thalamus MERFISH data, primarily
-  in jupyter notebook form.
+description: Code Ocean capsule and streamlit app for exploration, analysis, and easy
+  access of thalamus MERFISH data.
+authors:
+- name: Thomas Chartrand
+- name: Meghan Turner
+- name: Brian Long
+- name: Mathew Summers
