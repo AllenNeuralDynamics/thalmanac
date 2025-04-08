@@ -1,4 +1,4 @@
-# hash:sha256:b07399b66fe498fdae1d89164dc53723da7c8b1dc5b3cb7a50cca973a1621a76
+# hash:sha256:c6a54b1eb5c982b04110c51833b4f94e0bd1d765437840ba77e4a791b237b450
 ARG REGISTRY_HOST
 FROM $REGISTRY_HOST/codeocean/jupyterlab:3.6.1-miniconda4.12.0-python3.9-ubuntu20.04
 
@@ -23,7 +23,7 @@ RUN pip install -U --no-cache-dir \
     streamlit==1.38.0 \
     streamlit-aggrid==1.0.5 \
     zarr==2.17.0 \
-    -e git+https://github.com/AllenNeuralDynamics/abc-merfish-analysis@v0.3.0#egg=abc-merfish-analysis
+    -e git+https://github.com/AllenNeuralDynamics/abc-merfish-analysis@74ae0a5d67c014fe931f8e5f89e8179f2c57aba0#egg=abc-merfish-analysis
 
 COPY postInstall /
 RUN /postInstall
