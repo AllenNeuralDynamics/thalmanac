@@ -1,32 +1,17 @@
-# thalamus-merfish-analysis
+# Thalmanac: thalamus MERFISH analysis and access
 
-Code Ocean capsule for sharing analysis of thalamus MERFISH data, primarily in jupyter notebook form.
+Code Ocean capsule and streamlit app for exploration, analysis, and easy access of thalamus MERFISH data. Jupyter notebooks in `code` contain walkthroughs of the major functionality, while those in `code/figures` directly reproduce manuscript figures.
 
 
 ## Usage
 
-To create your own working copy on Code Ocean, select **Duplicate** from the **Capsule** menu and use the default option ("Link to git repository"). You can then make your own changes and sync back and forth from our shared github repository (https://github.com/AllenNeuralDynamics/thalamus-merfish-analysis) via git. You can use git functions either in the **Reproducibility** panel on the right-hand side of the capsule view, or within the cloud workstation (more flexibility).
+As a streamlit app: start a Code Ocean cloud workstation in streamlit mode (or from the terminal on another cloud workstation, run `streamlit run /code/streamlit_app.py`)
 
 As a package: install the core functionality as a package directly from github via pip: `pip install git+https://github.com/AllenNeuralDynamics/abc-merfish-analysis`
 
-As a streamlit app: start a Code Ocean cloud workstation in streamlit mode (or from the terminal on another cloud workstation, run `streamlit run /code/streamlit_app.py`)
+On Code Ocean: to work with your own copy of the capsule, select **Duplicate** from the **Capsule** menu and use the default option ("Link to git repository"). You can then make your own changes and sync back and forth from our shared github repository (https://github.com/AllenNeuralDynamics/thalmanac) via git. You can use git functions either in the **Reproducibility** panel on the right-hand side of the capsule view, or within the cloud workstation (more flexibility).
 
 Locally: you can clone directly from github to your personal machine, but data assets will not be available. Code Ocean also has an option to download the capsule with data assets, but this will be very large if you're not careful!
-
-### Data assets
-
-We are documenting the data assets used by the capsule by including their name and ID in `environment/data_assets.yml`. If a data asset is not broadly used, but required for a specific notebook or use case, include the entry commented out with an explanatory comment above. The listed data assets can then be attached from a cloud workstation using the API, by running `python environment/attach_data_assets.py` (ideally this could run in postInstall, but that's not currently possible). 
-
-To use this API call though, you'll need to generate and attach a CO API key (one time only): 
-1. Go to https://codeocean.allenneuraldynamics.org/account/apiKeys to create an access token with capsule read/write permissions.
-2. Copy the token and switch to the capsule environment manager, where you'll find "Add New API Credentials" under the "Codeocean API" entry.
-3. Paste the token in the "API Secret" field. The "Short Description" and "API Key" won't matter here, but you may want to use the key name from step 1 so you can refer back to it later
-
-### Git details 
-
-We'll generally plan to use a single branch, but feel free to create branches as needed for your own work, and merge back to the master branch to share. **Do not** attempt to "force push" in git (`git push -f`), as this seems to be incompatible with how Code Ocean interfaces with git. 
-
-Feel free to make minor environment changes, but make sure they work by testing in a cloud workstation before you commit/push. If you're making a dramatic change (installing something with a ton of dependencies) that may be an indication you should create a separate capsule for that work.
 
 # Code Ocean basics
 
