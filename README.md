@@ -1,4 +1,4 @@
-# Thalmanac: thalamus MERFISH analysis and access
+# THALMANAC: Thalamus MERFISH analysis and access
 
 Code Ocean capsule and streamlit app for exploration, analysis, and easy access of thalamus MERFISH data. Jupyter notebooks in `code` contain walkthroughs of the major functionality, while those in `code/figures` directly reproduce manuscript figures.
 
