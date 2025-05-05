@@ -59,7 +59,7 @@ if realigned and not has_realigned_asset:
 cplots.CCF_REGIONS_DEFAULT = abc.get_thalamus_names(level='devccf' if devccf else None)
 # always use CCFv3 names for user options
 ss.th_subregion_names = abc.get_thalamus_names('structure', include_unassigned=False)
-ccf_images, ccf_boundaries = get_ccf_data(realigned, devccf=devccf)
+ccf_images, ccf_boundaries = get_ccf_data(realigned, devccf=devccf, lump_structures=True)
 coords = "section" if realigned else "reconstructed"
 ss.common_args = dict(
     x_col="x_" + coords,
