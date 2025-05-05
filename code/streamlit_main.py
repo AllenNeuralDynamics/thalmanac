@@ -149,7 +149,7 @@ with pane2:
 
 
 with pane1:
-    st.header("Cell type taxonomy spatial plots")
+    st.header("Transcriptomic type spatial plots")
     by_nucleus, by_section = st.tabs(["by region or cell type", "by section"])
 
     with by_section:
