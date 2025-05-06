@@ -41,7 +41,7 @@ has_realigned_asset = Path(
 ).exists()
 abc = ThalamusWrapper(version=version)
 
-palettes = {level: abc.get_taxonomy_palette(level) for level in ["subclass", "supertype"]}
+palettes = {level: abc.get_taxonomy_palette(level) for level in ["class", "subclass", "supertype"]}
 palettes["cluster"] = abc.get_thalamus_cluster_palette()
 th_sections = abc._section_metadata.set_index("section_index")["brain_section_label"].loc[abc.TH_SECTIONS]
 

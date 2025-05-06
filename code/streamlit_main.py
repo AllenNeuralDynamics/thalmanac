@@ -164,8 +164,8 @@ with pane1:
         )
         celltype_label = st.selectbox(
             "Level of celltype hierarcy",
-            ["subclass", "supertype", "cluster"],
-            index=0,
+            ["class", "subclass", "supertype", "cluster"],
+            index=1,
             key="bs_tax_qp",
         )
         show_legend = st.checkbox("Show legend", key="bs_leg_qp")
