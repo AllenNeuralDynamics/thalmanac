@@ -177,6 +177,7 @@ with pane1:
                 sections=sections,
                 point_palette=palettes[celltype_label],
                 legend="cells" if show_legend else False,
+                replace_missing_cats=True,
                 **ss.common_args,
             )
             for plot in plots:
@@ -249,6 +250,7 @@ with pane1:
                 min_group_count=0,
                 point_palette=palettes[celltype_label],
                 bg_cells=obs_th_neurons,
+                replace_missing_cats=True,
                 **ss.common_args,
             )
             for plot in plots:

@@ -67,7 +67,6 @@ ss.common_args = dict(
     boundary_img=ccf_boundaries,
     ccf_images=ccf_images,
     ccf_level='devccf' if devccf else 'structure',
-    replace_missing_cats=True
 )
 
 with st.sidebar:
