@@ -10,7 +10,7 @@ services:
       - /mnt/data:/data/abc_atlas
     depends_on:
       - rclone
-    command: streamlit run /root/capsule/code/streamit_app.py
+    command: streamlit run /root/capsule/code/streamlit_app.py
     
   rclone:
     image: rclone/rclone:latest
