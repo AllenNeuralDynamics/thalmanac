@@ -1,0 +1,11 @@
+{
+	"name": "THALMANAC App",
+    "dockerComposeFile": "../environment/docker-compose.yml",
+    "service": "devcontainer",
+    "workspaceFolder": "/root/capsule",
+    "overrideCommand": true,
+	"remoteEnv": {
+		"PATH": "${containerEnv:PATH}:/root/.local/bin:/root/capsule/code"
+	},
+    "postAttachCommand": "streamlit run /root/capsule/code/streamit_app.py"
+}
