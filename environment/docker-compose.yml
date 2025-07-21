@@ -1,25 +1,30 @@
 services:
   streamlit:
+    image: streamlit-app:latest
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        - REGISTRY_HOST=registry.codeocean.allenneuraldynamics.org
     ports:
       - "8501:8501"
     volumes:
       - ..:/root/capsule:cached
-      - /mnt/data:/data/abc_atlas
+      - /mnt/abc_atlas:/data/abc_atlas:ro
     depends_on:
       - rclone
-    command: streamlit run /root/capsule/code/streamlit_app.py
+    command: streamlit run /root/capsule/code/streamlit_app.py 
     
   rclone:
     image: rclone/rclone:latest
     volumes:
-      - /mnt/data:/data/abc_atlas:rshared
+      - /mnt/abc_atlas:/data/abc_atlas:rshared
     devices:
       - /dev/fuse
     cap_add:
       - SYS_ADMIN
+    security_opt:
+      - apparmor:unconfined
     command: [
       "mount", 
       ":s3:allen-brain-cell-atlas", "/data/abc_atlas", 
@@ -34,6 +39,7 @@ services:
       "--buffer-size", "32m", 
       "--dir-cache-time", "1h", 
       "--no-checksum", 
+      "--no-modtime", 
       "--poll-interval", "0", 
       "--checkers", "36"
     ]

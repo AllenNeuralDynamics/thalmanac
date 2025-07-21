@@ -1,4 +1,3 @@
-import os
 import streamlit as st
 from streamlit_utils import (
     abc,
@@ -10,9 +9,8 @@ from streamlit_utils import (
 )
 from abc_merfish_analysis import ccf_plots as cplots
 
-FIG3_STATE = "?extend_borders_qp=False&mg_focus_qp=True&bn_group_qp=None&de_coreonly_qp=False&bn_borders_qp=False&bs_tax_qp=subclass&bs_leg_qp=False&bn_coreonly_qp=False&gp_focus_qp=True&de_tax_qp=cluster&bn_anno_qp=automated&realigned_qp=False&transform_qp=log2cpt&de_data_qp=WMB-10Xv3&bn_tax_qp=cluster&mg_dark_qp=True&devccf_qp=False&de_anno_qp=automated&gp_regionlist_qp=AM&gp_gene_qp=Pdyn&gp_sectionlist_qp=C57BL6J-638850.44&mg_regionlist_qp=AM&mg_sectionlist_qp=C57BL6J-638850.44&mg_genelist_qp=Pdyn&mg_genelist_qp=Shisa6&mg_genelist_qp=Cacng3&bn_typelist_qp=2676+TH+Prkcd+Grin2c+Glut_9&bn_typelist_qp=2675+TH+Prkcd+Grin2c+Glut_9&bn_typelist_qp=2674+TH+Prkcd+Grin2c+Glut_9&bn_typelist_qp=2668+TH+Prkcd+Grin2c+Glut_8&bn_regionlist_qp=AM"
-FIG4_STATE = "?extend_borders_qp=False&mg_focus_qp=True&bn_group_qp=None&de_coreonly_qp=False&bn_borders_qp=False&bs_tax_qp=subclass&bs_leg_qp=False&bn_coreonly_qp=False&gp_focus_qp=True&de_tax_qp=cluster&bn_anno_qp=automated&realigned_qp=False&transform_qp=log2cpt&de_data_qp=WMB-10Xv3&bn_tax_qp=cluster&mg_dark_qp=True&devccf_qp=False&de_anno_qp=automated&gp_regionlist_qp=VPM&gp_regionlist_qp=VPL&gp_regionlist_qp=PO&gp_gene_qp=Kcnab3&gp_sectionlist_qp=C57BL6J-638850.37&mg_regionlist_qp=VPM&mg_regionlist_qp=VPL&mg_regionlist_qp=PO&mg_sectionlist_qp=C57BL6J-638850.37&mg_genelist_qp=Scn4b&mg_genelist_qp=Kcnab3&mg_genelist_qp=Calb1&bn_typelist_qp=2663+TH+Prkcd+Grin2c+Glut_6&bn_typelist_qp=2648+TH+Prkcd+Grin2c+Glut_1&bn_typelist_qp=2649+TH+Prkcd+Grin2c+Glut_1&bn_regionlist_qp=VPL&bn_regionlist_qp=VPM&bn_regionlist_qp=PO"
-DIRECT_URL = f"https://codeocean.allenneuraldynamics.org/cw/{os.getenv('CO_COMPUTATION_ID')}/"
+FIG3_STATE = "/?extend_borders_qp=False&mg_focus_qp=True&bn_group_qp=None&de_coreonly_qp=False&bn_borders_qp=False&bs_tax_qp=subclass&bs_leg_qp=False&bn_coreonly_qp=False&gp_focus_qp=True&de_tax_qp=cluster&bn_anno_qp=automated&realigned_qp=False&transform_qp=log2cpt&de_data_qp=WMB-10Xv3&bn_tax_qp=cluster&mg_dark_qp=True&devccf_qp=False&de_anno_qp=automated&gp_regionlist_qp=AM&gp_gene_qp=Pdyn&gp_sectionlist_qp=C57BL6J-638850.44&mg_regionlist_qp=AM&mg_sectionlist_qp=C57BL6J-638850.44&mg_genelist_qp=Pdyn&mg_genelist_qp=Shisa6&mg_genelist_qp=Cacng3&bn_typelist_qp=2676+TH+Prkcd+Grin2c+Glut_9&bn_typelist_qp=2675+TH+Prkcd+Grin2c+Glut_9&bn_typelist_qp=2674+TH+Prkcd+Grin2c+Glut_9&bn_typelist_qp=2668+TH+Prkcd+Grin2c+Glut_8&bn_regionlist_qp=AM"
+FIG4_STATE = "/?extend_borders_qp=False&mg_focus_qp=True&bn_group_qp=None&de_coreonly_qp=False&bn_borders_qp=False&bs_tax_qp=subclass&bs_leg_qp=False&bn_coreonly_qp=False&gp_focus_qp=True&de_tax_qp=cluster&bn_anno_qp=automated&realigned_qp=False&transform_qp=log2cpt&de_data_qp=WMB-10Xv3&bn_tax_qp=cluster&mg_dark_qp=True&devccf_qp=False&de_anno_qp=automated&gp_regionlist_qp=VPM&gp_regionlist_qp=VPL&gp_regionlist_qp=PO&gp_gene_qp=Kcnab3&gp_sectionlist_qp=C57BL6J-638850.37&mg_regionlist_qp=VPM&mg_regionlist_qp=VPL&mg_regionlist_qp=PO&mg_sectionlist_qp=C57BL6J-638850.37&mg_genelist_qp=Scn4b&mg_genelist_qp=Kcnab3&mg_genelist_qp=Calb1&bn_typelist_qp=2663+TH+Prkcd+Grin2c+Glut_6&bn_typelist_qp=2648+TH+Prkcd+Grin2c+Glut_1&bn_typelist_qp=2649+TH+Prkcd+Grin2c+Glut_1&bn_regionlist_qp=VPL&bn_regionlist_qp=VPM&bn_regionlist_qp=PO"
 
 ss_to_qp()
 ss_from_qp()
@@ -27,17 +25,16 @@ st.set_page_config(page_title="Thalamus MERFISH explorer", layout="wide")
 def help_popup(message):
     st.write(message)
 
-if "help_shown" not in ss:
+if not ss.keys():
     help_popup(
         f"""
         ## Example configurations:
         Follow these links to access states of the app pre-configured for particular explorations
 
-        - [AM nucleus and related genes - Fig. 3]({DIRECT_URL+FIG3_STATE})
-        - [Somatosensory nuclei and related genes - Fig. 4]({DIRECT_URL+FIG4_STATE})
+        - [AM nucleus and related genes - Fig. 3]({st.context.url + FIG3_STATE})
+        - [Somatosensory nuclei and related genes - Fig. 4]({st.context.url + FIG4_STATE})
         """
     )
-    ss["help_shown"] = True
 
 with st.expander("CCF alignment settings"):
     realigned = st.radio(
@@ -70,15 +67,12 @@ ss.common_args = dict(
 )
 
 with st.sidebar:
-    st.markdown("## App Details")
+    st.markdown("## Dataset Details")
     st.write(f"Version: {version}")
     st.write(f"Gene data version: {abc.files.adata_raw.version}")
     st.write(f"Metadata version: {abc.files.cell_metadata.version}")
     st.write(f"CCF version: {abc.files.ccf_metadata.version}")
     st.write(f"Taxonomy ID: {abc.taxonomy_id}")
-    st.markdown("### App direct link")
-    url = DIRECT_URL
-    st.markdown(f"{url}")
 
 # extend size of multiselects for full section names
 st.markdown(
