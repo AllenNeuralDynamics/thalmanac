@@ -11,7 +11,6 @@ services:
     volumes:
       - ..:/root/capsule:cached
       - /mnt/data:/data:ro
-      - data:/data
     depends_on:
       - rclone
     command: streamlit run /root/capsule/code/streamlit_app.py 
