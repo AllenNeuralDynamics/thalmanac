@@ -141,7 +141,7 @@ import aind_data_schema.core.data_description as ds
 from aind_data_schema.core.metadata import Metadata
 
 dt = datetime.now()
-name = f"CCF-templates-resampled_{dt.strftime("%Y-%m-%d_%H-%M-%S")}"
+name = f"CCF-templates-resampled_{dt.strftime('%Y-%m-%d_%H-%M-%S')}"
 md = Metadata(
     name=name,
     location=f"s3://aind-open-data/{name}",
