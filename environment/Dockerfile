@@ -1,4 +1,4 @@
-# hash:sha256:928932b1cc88c3e9565f795152d603031347fb5993e4de2290c8edf38ca0380e
+# hash:sha256:a62ffdd2f86b0396a689afc2ae21d0f160dba09619aa393e85893f7311291586
 ARG REGISTRY_HOST
 FROM $REGISTRY_HOST/codeocean/mambaforge3:23.1.0-4-python3.10.12-ubuntu22.04
 
@@ -9,6 +9,7 @@ ARG GIT_ACCESS_TOKEN
 COPY git-askpass /
 
 RUN pip install -U --no-cache-dir \
+    aind-data-schema==2.0.0 \
     anndata==0.10.9 \
     colorcet==3.0.1 \
     colour-science==0.4.4 \
