@@ -1,4 +1,5 @@
 import subprocess
+from datetime import datetime
 
 subprocess.run(["pip", "install", "spatialdata==0.2.3"])
 
@@ -133,3 +134,86 @@ df["parcellation_devccf"] = df["parcellation_index_realigned_devccf"].map(
 )
 
 df.to_parquet("/results/abc_realigned_metadata_thalamus-boundingbox.parquet")
+
+import aind_data_schema.core.processing as ps
+from aind_data_schema.components.identifiers import DataAsset
+import aind_data_schema.core.data_description as ds
+from aind_data_schema.core.metadata import Metadata
+
+dt = datetime.now()
+name = f"CCF-templates-resampled_{dt.strftime("%Y-%m-%d_%H-%M-%S")}"
+md = Metadata(
+    name=name,
+    location=f"s3://aind-open-data/{name}",
+    data_description=ds.DataDescription(
+        name=name,
+        creation_time=dt,
+        institution=ds.Organization.AIND,
+        funding_source=ds.Funding(
+            funder=ds.Organization.NINDS,
+            grant_number="U19NS123714",
+            fundee=[ds.Person("Karel Svoboda")]
+        ),
+        data_level=ds.DataLevel.DERIVED,
+        investigators=[ds.Person("Thomas Chartrand")],
+        project_name="Thalamus in the middle - Project 2 Cell-type specific thalamocortical projectome",
+        # add other CCF atlas modalities?
+        modalities=[ds.Modality.MERFISH],
+    ),
+    processing=ps.Processing.create_with_sequential_process_graph(
+        data_processes=[
+            ps.DataProcess(
+                process_type=ps.ProcessName.OTHER,
+                name="Create rasterized images",
+                stage=ps.ProcessStage.ANALYSIS,
+                experimenters=["Thomas Chartrand"],
+                start_date_time=datetime(2023,2,28),
+                end_date_time=datetime(2023,2,28),
+                code=ps.Code(
+                    name="THALMANAC tools",
+                    url="https://github.com/AllenNeuralDynamics/thalmanac",
+                    run_script="code/scripts/export_quicknii_images.py",
+                    input_data=[DataAsset("s3://allen-brain-cell-atlas")]
+                ),
+                notes=(
+                    "Create thalamus-focused rasterized images of MERFISH sections, colored"
+                    "by subclass/supertype, for alignment to CCF reference"
+                )
+            ),
+            ps.DataProcess(
+                process_type=ps.ProcessName.IMAGE_ATLAS_ALIGNMENT,
+                name="Manual CCF alignment",
+                stage=ps.ProcessStage.ANALYSIS,
+                experimenters=["Thomas Chartrand"],
+                start_date_time=datetime(2024,2,28),
+                end_date_time=datetime(2024,2,28),
+                code=ps.Code(
+                    name="QuickNII",
+                    url="https://github.com/Neural-Systems-at-UIO/QuickNII"
+                ),
+                output_path="abc-merfish-analysis/src/abc_merfish_analysis/resources/quicknii_refined_20240228.json"
+            ),
+            ps.DataProcess(
+                process_type=ps.ProcessName.OTHER,
+                name="Reverse transform atlas",
+                stage=ps.ProcessStage.ANALYSIS,
+                experimenters=["Thomas Chartrand"],
+                start_date_time=dt,
+                end_date_time=dt,
+                code=ps.Code(
+                    name="THALMANAC tools",
+                    url="https://github.com/AllenNeuralDynamics/thalmanac",
+                    run_script="code/scripts/ingest_quicknii_transforms.py",
+                    input_data=[DataAsset("s3://allen-brain-cell-atlas")]
+                ),
+                notes=(
+                    "Create resampled section images from input atlas label volumes, one for each",
+                    "MERFISH section of interest"
+                )
+            ),
+        ]
+    )
+)
+md.write_standard_file("/results")
+md.processing.write_standard_file("/results")
+md.data_description.write_standard_file("/results")
