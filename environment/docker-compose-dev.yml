@@ -1,10 +1,16 @@
 services:
   streamlit:
-    image: registry.codeocean.allenneuraldynamics.org/published/c26a9f09-0be6-4595-a45b-a0c32fd42755:v3
+    image: streamlit-app:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - REGISTRY_HOST=registry.codeocean.allenneuraldynamics.org
     ports:
       - "8501:8501"
     volumes:
-      - /mnt:/data:ro
+      - ..:/root/capsule:cached
+      - /mnt/data:/data:ro
     depends_on:
       - rclone
     command: streamlit run /root/capsule/code/streamlit_app.py 
@@ -12,7 +18,7 @@ services:
   rclone:
     image: rclone/rclone:latest
     volumes:
-      - /mnt:/data:rshared
+      - /mnt/data:/data:rshared
       - ./mount_all.sh:/mount_all.sh:ro
     devices:
       - /dev/fuse
