@@ -1,12 +1,13 @@
 import subprocess
 from datetime import datetime
 
-subprocess.run(["pip", "install", "spatialdata==0.2.3"])
+subprocess.run(["pip", "install", "spatialdata==0.2.3", "dask==2024.4.1", "xarray==2024.07.0"])
 
 import spatialdata as sd
 import pandas as pd
 import numpy as np
 import nibabel
+import abc_merfish_analysis
 from abc_merfish_analysis import abc_load as abc
 from abc_merfish_analysis import ccf_registration as ccf
 from abc_merfish_analysis import ccf_transforms as ccft
@@ -149,13 +150,13 @@ md = Metadata(
         name=name,
         creation_time=dt,
         institution=ds.Organization.AIND,
-        funding_source=ds.Funding(
+        funding_source=[ds.Funding(
             funder=ds.Organization.NINDS,
             grant_number="U19NS123714",
-            fundee=[ds.Person("Karel Svoboda")]
-        ),
+            fundee=[ds.Person(name="Karel Svoboda")]
+        )],
         data_level=ds.DataLevel.DERIVED,
-        investigators=[ds.Person("Thomas Chartrand")],
+        investigators=[ds.Person(name="Thomas Chartrand")],
         project_name="Thalamus in the middle - Project 2 Cell-type specific thalamocortical projectome",
         # add other CCF atlas modalities?
         modalities=[ds.Modality.MERFISH],
@@ -173,12 +174,10 @@ md = Metadata(
                     name="THALMANAC tools",
                     url="https://github.com/AllenNeuralDynamics/thalmanac",
                     run_script="code/scripts/export_quicknii_images.py",
-                    input_data=[DataAsset("s3://allen-brain-cell-atlas")]
+                    input_data=[DataAsset(url="s3://allen-brain-cell-atlas")]
                 ),
-                notes=(
-                    "Create thalamus-focused rasterized images of MERFISH sections, colored"
-                    "by subclass/supertype, for alignment to CCF reference"
-                )
+                notes="""Create thalamus-focused rasterized images of MERFISH sections, colored
+                    by subclass/supertype, for alignment to CCF reference"""
             ),
             ps.DataProcess(
                 process_type=ps.ProcessName.IMAGE_ATLAS_ALIGNMENT,
@@ -204,12 +203,10 @@ md = Metadata(
                     name="THALMANAC tools",
                     url="https://github.com/AllenNeuralDynamics/thalmanac",
                     run_script="code/scripts/ingest_quicknii_transforms.py",
-                    input_data=[DataAsset("s3://allen-brain-cell-atlas")]
+                    input_data=[DataAsset(url="s3://allen-brain-cell-atlas")]
                 ),
-                notes=(
-                    "Create resampled section images from input atlas label volumes, one for each",
-                    "MERFISH section of interest"
-                )
+                notes="""Create resampled section images from input atlas label volumes, one for each",
+                    "MERFISH section of interest"""
             ),
         ]
     )
