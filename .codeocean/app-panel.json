@@ -1,0 +1,14 @@
+{
+	"version": 1,
+	"parameters": [
+		{
+			"id": "a6CsP90bEQOHhULW",
+			"name": "script_path",
+			"description": "path to python script to run",
+			"type": "text",
+			"value_type": "string",
+			"default_value": "code/abc_th_to_cirro.py",
+			"required": true
+		}
+	]
+}
