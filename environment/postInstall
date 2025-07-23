@@ -5,4 +5,4 @@ set -e
 # using abc_atlas_access.abc_atlas_cache.manifest only, only dep is pydantic
 pip install --no-deps https://github.com/AllenInstitute/abc_atlas_access/archive/v3.0.0.tar.gz
 
-pip install git+https://github.com/AllenNeuralDynamics/abc-merfish-analysis@v0.4.0
+pip install git+https://github.com/AllenNeuralDynamics/abc-merfish-analysis@v0.4.1
