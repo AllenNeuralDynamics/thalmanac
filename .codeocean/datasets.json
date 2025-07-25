@@ -10,6 +10,10 @@
 			"mount": "KimLabDevCCFv1"
 		},
 		{
+			"id": "af25babe-5d8c-47d8-98d5-d3c5776173bb",
+			"mount": "CCF-templates-resampled"
+		},
+		{
 			"id": "b76f5c2c-d94b-426b-b861-699ea0a63889",
 			"mount": "abc_atlas"
 		}

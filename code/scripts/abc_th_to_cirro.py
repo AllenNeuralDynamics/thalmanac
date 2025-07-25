@@ -234,7 +234,7 @@ def add_spagcn_to_adata(adata, domains_to_add='res1pt4', spagcn_col='spagcn'):
     # load in SpaGCN domain results
     # temporarily a static file in '../code/resources' until I get a reproducible run setup for the spagcn capsule
     # TODO: move this file to an asset
-    spagcn_df = pd.read_parquet('/data/spagcn/spagcn_predicted_domains.parquet')
+    spagcn_df = pd.read_parquet('/data/merfish_638850_spagcn/spagcn_predicted_domains.parquet')
 
     for col in spagcn_df.columns:
         # preserve numerical order when converting values to str, then column to categorical
@@ -273,7 +273,7 @@ def add_nsf_to_obs(adata):
     '''Add all calculated NSF patterns to adata.obs. '''
 
     # load NSF results
-    adata_nsf = ad.read_zarr("/root/capsule/data/nsf_2000_adata/nsf_2000_adata.zarr")
+    adata_nsf = ad.read_zarr("/root/capsule/data/merfish_638850_nsf/nsf_2000_adata.zarr")
 
     # get NSF pattern columns from obs
     nsf_cols_bool = adata_nsf.obs.columns.str.startswith('nsf')

@@ -37,7 +37,7 @@ from anndata import read_h5ad
 
 version = "20230830"
 has_realigned_asset = Path(
-    "/data/realigned/abc_realigned_metadata_thalamus-boundingbox.parquet"
+    "/data/CCF-templates-resampled"
 ).exists()
 abc = ThalamusWrapper(version=version)
 
