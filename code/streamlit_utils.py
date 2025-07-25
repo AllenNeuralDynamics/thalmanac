@@ -73,7 +73,7 @@ def get_sc_data(
     return adata, sc_obs_filtered
 
 
-@st.cache_data
+@st.cache_resource
 def get_data(realigned, version=version, extend_borders=False):
     obs = abc.get_combined_metadata(realigned=has_realigned_asset, drop_unused=False)
     # remove non-neuronal and some other outlier non-thalamus types
@@ -83,7 +83,7 @@ def get_data(realigned, version=version, extend_borders=False):
     obs_th_neurons = abc.filter_by_thalamus_coords(obs_neurons, realigned=realigned, buffer=buffer)
     return obs_th_neurons
 
-@st.cache_data
+@st.cache_resource
 def get_ccf_data(realigned, devccf=False, lump_structures=False, edge_width=1):
     ccf_images = abc.get_ccf_labels_image(resampled=True, realigned=realigned, devccf=devccf)
 
