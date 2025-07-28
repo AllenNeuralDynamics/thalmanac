@@ -51,7 +51,8 @@ def get_adata(transform="cpm", version=version, realigned=False):
     return abc.load_adata(transform=transform, from_metadata=obs_th_neurons)
 
 
-@st.cache_resource
+# limit cache size to avoid memory issues (in case of many different transforms being used)
+@st.cache_resource(max_entries=6)
 def get_sc_data(
     sc_dataset="WMB-10Xv3",
     transform="log2",
