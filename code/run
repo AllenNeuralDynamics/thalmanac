@@ -1,5 +1,35 @@
 #!/usr/bin/env bash
 set -ex
 
-# This is the master script for the capsule. When you click "Reproducible Run", the code in this file will execute.
-python -u "$@"
+
+# Main processing function
+process_file() {
+    local file="$1"
+    local extension="${file##*.}"
+    
+    case "$extension" in
+        py)
+            python -u "$file"
+            ;;
+        ipynb)
+            jupyter nbconvert \
+                --to 'html' \
+                --ExecutePreprocessor.allow_errors=False \
+                --ExecutePreprocessor.timeout=-1 \
+                --FilesWriter.build_directory=../results \
+                --execute "$file"
+            ;;
+        *)
+            echo "Unsupported file type: $file"
+            ;;
+    esac
+}
+
+# Process all arguments (explicitly listed or from wildcard expansion)
+for file in "$@"; do
+    if [[ -f "$file" ]]; then
+        process_file "$file"
+    else
+        echo "File not found: $file"
+    fi
+done
