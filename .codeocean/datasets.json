@@ -14,6 +14,10 @@
 			"mount": "KimLabDevCCFv1"
 		},
 		{
+			"id": "a8d147d5-5a56-4184-ac06-d7ecc79ebbb5",
+			"mount": "merfish_638850_spagcn"
+		},
+		{
 			"id": "af25babe-5d8c-47d8-98d5-d3c5776173bb",
 			"mount": "CCF-templates-resampled"
 		},
@@ -24,10 +28,6 @@
 		{
 			"id": "c604f0fa-8f8f-4511-b0b3-9cd6c469b7dc",
 			"mount": "merfish_638850_nsf"
-		},
-		{
-			"id": "ea9f7b49-976d-4a82-854e-674765281f47",
-			"mount": "merfish_638850_spagcn"
 		}
 	]
 }
