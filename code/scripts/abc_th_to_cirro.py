@@ -273,7 +273,7 @@ def add_nsf_to_obs(adata):
     '''Add all calculated NSF patterns to adata.obs. '''
 
     # load NSF results
-    adata_nsf = ad.read_zarr("/root/capsule/data/merfish_638850_nsf/full_thalamus_nsf_2000_adata")
+    adata_nsf = ad.read_zarr("/root/capsule/data/merfish_638850_nsf/full_thalamus_nsf_2000.zarr")
 
     # get NSF pattern columns from obs
     nsf_cols_bool = adata_nsf.obs.columns.str.startswith('nsf')
