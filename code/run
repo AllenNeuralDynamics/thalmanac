@@ -26,7 +26,7 @@ process_file() {
 }
 
 # Process all arguments (explicitly listed or from wildcard expansion)
-for file in ($(echo "$@")); do
+for file in $(echo "$@"); do
     if [[ -f "$file" ]]; then
         process_file "$file"
     else
