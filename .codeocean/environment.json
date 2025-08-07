@@ -27,7 +27,7 @@
 				},
 				{
 					"name": "git+https://github.com/AllenNeuralDynamics/abc-merfish-analysis#egg=abc-merfish-analysis",
-					"version": "v0.4.8"
+					"version": "d3d7c9dfffbf716cad5e23fef706b73e998e54fa"
 				},
 				{
 					"name": "nibabel",

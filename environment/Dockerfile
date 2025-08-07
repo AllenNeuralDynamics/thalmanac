@@ -1,4 +1,4 @@
-# hash:sha256:1eda52dadf5258e80349c77df56eac2c5be250f29cc8f97056c8c836e4acfdbc
+# hash:sha256:bbdaf378d133e0549de71149ee429b2a04a68ac11eae8c5319e11d722490270b
 ARG REGISTRY_HOST
 FROM $REGISTRY_HOST/codeocean/mambaforge3:23.1.0-4-python3.10.12-ubuntu22.04
 
@@ -23,7 +23,7 @@ RUN pip install -U --no-cache-dir \
     streamlit==1.46.0 \
     streamlit-aggrid==1.0.5 \
     zarr==2.17.0 \
-    -e git+https://github.com/AllenNeuralDynamics/abc-merfish-analysis@v0.4.8#egg=abc-merfish-analysis
+    -e git+https://github.com/AllenNeuralDynamics/abc-merfish-analysis@d3d7c9dfffbf716cad5e23fef706b73e998e54fa#egg=abc-merfish-analysis
 
 COPY postInstall /
 RUN /postInstall
