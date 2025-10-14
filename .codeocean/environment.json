@@ -28,7 +28,7 @@
 				},
 				{
 					"name": "git+https://github.com/AllenNeuralDynamics/abc-merfish-analysis#egg=abc-merfish-analysis",
-					"version": "4103bf9b5559d4f115fed08df3cca85445ea7ad9"
+					"version": "fdd6ba5e66505f7e9e639cf15c8a6654ac01ccf3"
 				},
 				{
 					"name": "matplotlib",

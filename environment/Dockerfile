@@ -1,4 +1,4 @@
-# hash:sha256:c8ad856a8e13fdc42f0c53cbcfa57ed8abe4503523850441c5bf9e3c207f0018
+# hash:sha256:562286627a20a65407a0762c44a41e6c1f0ad94ad075be906450a340e758e2fe
 ARG REGISTRY_HOST
 FROM $REGISTRY_HOST/codeocean/mambaforge3:23.1.0-4-python3.10.12-ubuntu22.04
 
@@ -28,7 +28,7 @@ RUN --mount=type=secret,id=git-access-token \
     streamlit==1.46.0 \
     streamlit-aggrid==1.0.5 \
     zarr==2.17.0 \
-    -e git+https://github.com/AllenNeuralDynamics/abc-merfish-analysis@4103bf9b5559d4f115fed08df3cca85445ea7ad9#egg=abc-merfish-analysis
+    -e git+https://github.com/AllenNeuralDynamics/abc-merfish-analysis@fdd6ba5e66505f7e9e639cf15c8a6654ac01ccf3#egg=abc-merfish-analysis
 
 COPY postInstall /
 RUN --mount=type=secret,id=secrets . /run/secrets/secrets \
