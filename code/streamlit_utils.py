@@ -37,7 +37,7 @@ from anndata import read_h5ad
 
 version = "20230830"
 has_realigned_asset = Path(
-    "/data/CCF-templates-resampled"
+    "/data/CCF-templates-realigned"
 ).exists()
 abc = ThalamusWrapper(version=version)
 

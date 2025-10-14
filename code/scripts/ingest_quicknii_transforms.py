@@ -12,11 +12,9 @@ from abc_merfish_analysis import abc_load as abc
 from abc_merfish_analysis import ccf_registration as ccf
 from abc_merfish_analysis import ccf_transforms as ccft
 from abc_merfish_analysis import ccf_images as ccfi
-try:
-    from importlib.resources import files
-except (ImportError, ModuleNotFoundError):
-    from importlib_resources import files
-package_files = files(abc_merfish_analysis)
+from pathlib import Path
+
+realignment_files = Path("/data/thalamus_realignment")
 df_full = abc.get_combined_metadata(drop_unused=False)
 # permissive spatial subset using published alignment
 # (previously using manual subset)
@@ -27,13 +25,11 @@ slice_label = "slice_int"
 df[slice_label] = df["z_section"].apply(lambda x: int(x * 10))
 
 transforms_by_section = ccf.read_quicknii_file(
-    package_files / "resources" / "quicknii_refined_20240228.json",
+    realignment_files / "quicknii_refined_20240228.json",
     scale=25,
 )
 minmax = pd.read_csv(
-    package_files
-    / "resources"
-    / "brain3_thalamus_coordinate_bounds.csv",
+    realignment_files/ "brain3_thalamus_coordinate_bounds.csv",
     index_col=0,
 )
 
@@ -190,7 +186,7 @@ md = Metadata(
                     name="QuickNII",
                     url="https://github.com/Neural-Systems-at-UIO/QuickNII"
                 ),
-                output_path="abc-merfish-analysis/src/abc_merfish_analysis/resources/quicknii_refined_20240228.json"
+                output_path="quicknii_refined_20240228.json"
             ),
             ps.DataProcess(
                 process_type=ps.ProcessName.OTHER,

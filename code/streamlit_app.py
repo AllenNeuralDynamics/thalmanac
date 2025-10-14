@@ -69,9 +69,9 @@ ss.common_args = dict(
 with st.sidebar:
     st.markdown("## Dataset Details")
     st.write(f"Version: {version}")
-    st.write(f"Gene data version: {abc.files.adata_raw.version}")
-    st.write(f"Metadata version: {abc.files.cell_metadata.version}")
-    st.write(f"CCF version: {abc.files.ccf_metadata.version}")
+    st.write(f"Gene data version: {abc.get_file_version('adata_raw')}")
+    st.write(f"Metadata version: {abc.get_file_version('cell_metadata')}")
+    st.write(f"CCF version: {abc.get_file_version('ccf_metadata')}")
     st.write(f"Taxonomy ID: {abc.taxonomy_id}")
 
 # extend size of multiselects for full section names

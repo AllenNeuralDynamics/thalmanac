@@ -1,17 +1,15 @@
 import pandas as pd
 from abc_merfish_analysis import abc_load as abc
 from abc_merfish_analysis import ccf_registration as ccf
-try:
-    from importlib.resources import files
-except (ImportError, ModuleNotFoundError):
-    from importlib_resources import files
-package_files = files(abc_merfish_analysis)
+from pathlib import Path
 
-df_full = abc.get_combined_metadata()
+realignment_files = Path("/data/thalamus_realignment")
 minmax = pd.read_csv(
-    package_files/"resources" / "brain3_thalamus_coordinate_bounds.csv",
+    realignment_files/ "brain3_thalamus_coordinate_bounds.csv",
     index_col=0,
 )
+df_full = abc.get_combined_metadata()
+
 xx = minmax["x_section"].values
 yy = minmax["y_section"].values
 df = df_full.query(f"{yy[0]} <= y_section <= {yy[1]} and {xx[0]} <= x_section <= {xx[1]}").copy()
