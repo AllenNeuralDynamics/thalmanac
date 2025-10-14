@@ -4,7 +4,7 @@
 		{
 			"id": "a6CsP90bEQOHhULW",
 			"name": "script_path",
-			"description": "path to scripts or notebooks to run",
+			"description": "path to scripts or notebooks to run (within code directory)",
 			"help_text": "Path can contain wildcards, in which case all matching files will be executed.",
 			"type": "text",
 			"value_type": "string",

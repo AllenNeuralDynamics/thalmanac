@@ -1,20 +1,25 @@
-# hash:sha256:bbdaf378d133e0549de71149ee429b2a04a68ac11eae8c5319e11d722490270b
+# hash:sha256:f52977bb61c66ee3ff0408f681baf2b248c183f049ae110a06d6d426f01df308
 ARG REGISTRY_HOST
 FROM $REGISTRY_HOST/codeocean/mambaforge3:23.1.0-4-python3.10.12-ubuntu22.04
 
 ARG DEBIAN_FRONTEND=noninteractive
-
 ARG GIT_ASKPASS
-ARG GIT_ACCESS_TOKEN
 COPY git-askpass /
 
-RUN pip install -U --no-cache-dir \
+RUN --mount=type=secret,id=git-access-token \
+    GIT_ACCESS_TOKEN="$(cat /run/secrets/git-access-token)" \
+    pip install -U --no-cache-dir \
     aind-data-schema==2.0.0 \
     anndata==0.10.9 \
     colorcet==3.0.1 \
     colour-science==0.4.4 \
+    matplotlib==3.10.5 \
+    networkx==3.4.2 \
     nibabel==5.1.0 \
+    numpy==1.24.4 \
     openpyxl==3.1.5 \
+    pandas==2.3.1 \
+    pyarrow==21.0.0 \
     pydantic==2.7.1 \
     scanpy==1.9.3 \
     scikit-learn==1.2.2 \
@@ -23,7 +28,8 @@ RUN pip install -U --no-cache-dir \
     streamlit==1.46.0 \
     streamlit-aggrid==1.0.5 \
     zarr==2.17.0 \
-    -e git+https://github.com/AllenNeuralDynamics/abc-merfish-analysis@d3d7c9dfffbf716cad5e23fef706b73e998e54fa#egg=abc-merfish-analysis
+    -e git+https://github.com/AllenNeuralDynamics/abc-merfish-analysis@b8ead6d405bfc616afc9310cdb73e73d5f47dea2#egg=abc-merfish-analysis
 
 COPY postInstall /
-RUN /postInstall
+RUN --mount=type=secret,id=secrets . /run/secrets/secrets \
+    && /postInstall

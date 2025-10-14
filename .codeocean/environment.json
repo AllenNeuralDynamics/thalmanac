@@ -4,7 +4,8 @@
 	"post_install": true,
 	"options": {
 		"registry_host_arg": true,
-		"git_ask_pass": true
+		"git_ask_pass": true,
+		"mount_secrets": true
 	},
 	"installers": {
 		"pip": {
@@ -27,15 +28,35 @@
 				},
 				{
 					"name": "git+https://github.com/AllenNeuralDynamics/abc-merfish-analysis#egg=abc-merfish-analysis",
-					"version": "d3d7c9dfffbf716cad5e23fef706b73e998e54fa"
+					"version": "b8ead6d405bfc616afc9310cdb73e73d5f47dea2"
+				},
+				{
+					"name": "matplotlib",
+					"version": "3.10.5"
+				},
+				{
+					"name": "networkx",
+					"version": "3.4.2"
 				},
 				{
 					"name": "nibabel",
 					"version": "5.1.0"
 				},
 				{
+					"name": "numpy",
+					"version": "1.24.4"
+				},
+				{
 					"name": "openpyxl",
 					"version": "3.1.5"
+				},
+				{
+					"name": "pandas",
+					"version": "2.3.1"
+				},
+				{
+					"name": "pyarrow",
+					"version": "21.0.0"
 				},
 				{
 					"name": "pydantic",
