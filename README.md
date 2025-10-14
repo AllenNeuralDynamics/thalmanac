@@ -1,12 +1,14 @@
 # THALMANAC: Thalamus MERFISH analysis and access
 
-Code Ocean capsule and streamlit app for exploration, analysis, and easy access of thalamus MERFISH data from the Allen Brain Cell Atlas. Jupyter notebooks in `code` contain walkthroughs of the major functionality, while those in `code/figures` directly reproduce manuscript figures.
+Code Ocean capsule and streamlit app for exploration, analysis, and easy access of thalamus MERFISH data from the Allen Brain Cell Atlas. Jupyter notebooks in `code` contain walkthroughs of the major functionality, while those in `code/figures` directly reproduce manuscript figures. Scripts in `code/scripts` include those used during the analysis to reformat label volumes and nucleus annotations, and one to save processed data in Cirrocumulus-compatible h5ad format (`scripts/abc_th_to_cirro.py`). See manuscript methods for more details. 
 
 ## Input data
-- _Allen Brain Cell (ABC) Atlas_: this capsule uses the thalamus subset of the mouse whole-brain transcriptomic cell type atlas (Hongkui Zeng) dataset,
+- _Allen Brain Cell (ABC) Atlas_: This capsule uses the thalamus subset of the mouse whole-brain transcriptomic cell type atlas (Hongkui Zeng) dataset,
 loaded following https://alleninstitute.github.io/abc_atlas_access/intro.html (either via the Code Ocean asset that mounts s3 data directly, or by downloading to a local cache).
 
-- KimLabDevCCFv001
+- _Domain detection outputs_: _merfish_638850_nsf_ and _merfish_638850_spagcn_
+
+- _Common Coordinate Framework (CCF) images_: Alternate brain region label volumes, including _KimLabDevCCFv001_, _KimLabDevCCFv001_ (resampled to match ABC atlas sections), _CCF-templates-realigned_ (volumes from CCFv3 and DevCCFv001 matched to ABC atlas sections via the alternate manual affine alignment stored in _thalamus_realignment_). These are included for visualization functionality only, not used to generate manuscript figures.
 
 ## Usage
 
