@@ -19,7 +19,7 @@ fi
 echo "=== Step 2: Patch Dockerfile ==="
 DOCKERFILE="$COMPOSE_DIR/Dockerfile"
 
-# More reliable multiline approach using Python
+# Remove code ocean capsule specific parameters from the Dockerfile to make it work in our EC2 environment
 python3 - <<'EOF'
 import re
 

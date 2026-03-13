@@ -1,12 +1,13 @@
-name: Deploy to EC2
+name: Deploy to EC2 Prod
 
 on:
   push:
     branches:
-      - ci-deploy-to-ec2
+      - main
 
 jobs:
   deploy:
+    if: false # Disable this workflow until we're ready to deploy to prod
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -19,14 +20,14 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: "arn:aws:iam::225952147762:role/AindThalmanacGithubRoleTest"
+          role-to-assume: "arn:aws:iam::467914378000:role/AindThalmanacGithubRole"
           aws-region: "us-west-2"
 
       - name: Send deploy script to EC2 via SSM
         run: |
           # Base64 encode the script to avoid shell escaping issues
           SCRIPT_CONTENT=$(base64 -w 0 scripts/deploy.sh)
-          EC2_INSTANCE_ID="i-0aadaae3d79e702b7"
+          EC2_INSTANCE_ID="i-0bd2f96cc81f4c261"
           
           COMMAND_ID=$(aws ssm send-command \
             --instance-ids "$EC2_INSTANCE_ID" \
