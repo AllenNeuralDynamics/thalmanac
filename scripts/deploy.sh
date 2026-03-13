@@ -45,9 +45,8 @@ EOF
 echo "=== Step 3: Rebuild and restart docker compose ==="
 cd "$COMPOSE_DIR"
 
-# Stop only the streamlit container to avoid disrupting rclone mount
-docker compose down streamlit || true
-docker compose build streamlit
-docker compose up -d streamlit
+# Rebuild the Docker image and restart the containers
+docker compose down
+docker compose up --build -d
 
 echo "=== Deploy complete ==="
